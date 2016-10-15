@@ -29,7 +29,7 @@ namespace CCK
     {
         protected override string categoryTag
         {
-            get { return "cck-lifesupport"; }  //Convention is to preface tag with cck-
+            get { return "cck-lifesupport"; }  //Convention is to preface tag with cck
             set { }
         }
         protected override string categoryTitle
