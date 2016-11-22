@@ -14,7 +14,7 @@ namespace CCK
     {
         protected override string categoryTag
         {
-            get { return "CCK_Containers"; }
+            get { return "cck-containers"; }
             set { }
         }
         protected override string categoryTitle
