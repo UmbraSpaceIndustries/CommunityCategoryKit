@@ -33,7 +33,7 @@ SRC = '..'
 # Extract version number from here. See ExtractVersion() method.
 SRC_VERSIONS_FILE = SRC + '/SOURCE/CCK/CCK/Properties/AssemblyInfo.cs'
 # Path to the release's binary. If it doesn't exist then no release.
-SRC_COMPILED_BINARY = '/SOURCE/CCK/CCK/bin/Release/CCK.dll'
+SRC_COMPILED_BINARY = SRC + '/SOURCE/CCK/CCK/bin/Release/CCK.dll'
 # Source version file to be updated during the build (see UpdateVersionInSources).
 # This update will go into the repository.
 SRC_REPOSITORY_VERSION_FILE = SRC + '/FOR_RELEASE/GameData/CommunityCategoryKit/CCK.version'
@@ -95,7 +95,7 @@ def CopyByRegex(src_dir, dst_dir, pattern):
 # Makes the binary.
 def CompileBinary():
   if not SRC_COMPILED_BINARY is None:
-    binary_path = SRC + SRC_COMPILED_BINARY
+    binary_path = SRC_COMPILED_BINARY
     if os.path.exists(binary_path):
       os.unlink(binary_path)
   print 'Compiling the sources in PROD mode...'
@@ -103,7 +103,7 @@ def CompileBinary():
 
   if (code != 0
       or not SRC_COMPILED_BINARY is None
-      and not os.path.exists(SRC + SRC_COMPILED_BINARY)):
+      and not os.path.exists(SRC_COMPILED_BINARY)):
     print 'ERROR: Compilation failed.'
     exit(code)
 
