@@ -50,13 +50,13 @@ DEST_RELEASE_NAME_FMT = 'CCK_%d.%d.%d'
 # A file name format for releases with build field other than zero.
 DEST_RELEASE_NAME_WITH_BUILD_FMT = 'CCK_%d.%d.%d_build%d'
 
-
-# Destination version to be updated post release (see UpdateVersionInDestinations).
-# This is a copy of the source version placed into the appropriate destination
-# folder.
-DEST_PLUGIN_VERSION_COPY = (
-    SRC_REPOSITORY_VERSION_FILE, DEST
-    + '/GameData/CommunityCategoryKit/CCK.version')
+# Destination targets to be updated post release (see UpdateVersionInDestinations).
+# This is a copy of the source version(s) placed into the appropriate destination
+# folder(s).
+POST_BUILD_COPY = [
+    (SRC_REPOSITORY_VERSION_FILE, DEST + '/GameData/CommunityCategoryKit/CCK.version'),
+    (SRC_COMPILED_BINARY, SRC + '/FOR_RELEASE/GameData/CommunityCategoryKit/CCK.dll'),
+]
 
 
 # Keys are paths in DEST, values are paths/patterns in SRC.
@@ -178,9 +178,9 @@ def ExtractVersion():
 
 # Updates the destination files with the version info.
 def UpdateVersionInDestinations():
-  print 'Copy plugin version file "%s" into "%s"' % (
-      DEST_PLUGIN_VERSION_COPY[0], DEST_PLUGIN_VERSION_COPY[1])
-  shutil.copy(DEST_PLUGIN_VERSION_COPY[0], DEST_PLUGIN_VERSION_COPY[1])
+  for source, target in POST_BUILD_COPY:
+    print 'Copying "%s" into "%s"...' % (source, target)
+    shutil.copy(source, target)
 
 
 # Updates the source files with the version info.
