@@ -133,13 +133,13 @@ namespace CCK
         void Awake() {
             // Collect filter definitions.
             var commonItemsNode = GameDatabase.Instance.GetConfigNode(
-                "CommunityCategoryKit/common-categories/CCKCommonFilterConfig");
+                "CommunityCategoryKit/common-filters/CCKCommonFilterConfig");
             if (commonItemsNode != null)
             {
                 AddFiltersFromConfig(commonItemsNode, isCommonTag: true);
             }
             var extraItemsNode = GameDatabase.Instance.GetConfigNode(
-                "CommunityCategoryKit/extra-categories/CCKExtraFilterConfig");
+                "CommunityCategoryKit/extra-filters/CCKExtraFilterConfig");
             if (extraItemsNode != null)
             {
                 AddFiltersFromConfig(extraItemsNode, isCommonTag: false);
