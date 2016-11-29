@@ -2,7 +2,7 @@
 
 using KSP.UI.Screens;
 using RUI.Icons.Selectable;
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,56 +12,85 @@ namespace CCK
     class PartsFilter
     {
         /// <summary>Tag for the category filter.</summary>
-        public string categoryTag { get; private set; }
+        public readonly string tag;
+        /// <summary>Category ttitle to show in the editor.</summary>
+        public readonly string title;
+        /// <summary>Tells if filter is defined by the CCK core.</summary>
+        public readonly bool isCommon;
 
-        readonly string categoryTitle;
+        /// <summary>Texture URL the icon in normal state.</summary>
+        readonly string normalTextureName;
+        /// <summary>
+        /// Texture URL the icon in selected state. If omitted or not found then a simple icon will
+        /// be created with selected a texture automatically generated.
+        /// </summary>
+        readonly string selectedTextureName;
+        /// <summary>All parts that matched the filter.</summary>
         readonly List<AvailablePart> avParts = new List<AvailablePart>();
-        readonly string categoryIconTextureUrlPrefix;
+        /// <summary>Editor button to attach filter to.</summary>
         const string Category = "Filter by Function";
 
         /// <summary>Creates a filter.</summary>
-        /// <param name="tag">Tag to filter parts for.</param>
-        /// <param name="title">Title (hint) of the category icon in the editor.</param>
-        /// <param name="iconTextureUrlPrefix">
-        /// Game database URL prefix to search for the icon textures.
+        /// <param name="tag">
+        /// Tag to check in the parts. Good style is to have it prefixed with <c>"cck-"</c> string
+        /// to indicate it's a CCK tag.
         /// </param>
-        public PartsFilter(string tag, string title, string iconTextureUrlPrefix)
+        /// <param name="title">Title (hint) of the category icon in the editor.</param>
+        /// <param name="normalTextureName">
+        /// Game database URL to a texture for icon normal state.
+        /// </param>
+        /// <param name="selectedTextureName">
+        /// Game database URL to a texture for icon selected state. Can be empty, in which case
+        /// texture for the selected state will be auto-generated.
+        /// </param>
+        /// <param name="isCommon">
+        /// Tells if category is a CCK native category. Such categories cannot be overwritten by the
+        /// third-party mods.
+        /// </param>
+        public PartsFilter(string tag, string title,
+                           string normalTextureName, string selectedTextureName, bool isCommon)
         {
-            categoryTag = tag;
-            categoryTitle = title;
-            categoryIconTextureUrlPrefix = iconTextureUrlPrefix;
-            Debug.LogFormat("New CCK filter \"{0}\": tag={1}, icon={2}",
-                            categoryTitle, categoryTag, categoryIconTextureUrlPrefix);
+            this.tag = tag.ToLower();  // In KSP tags are case-insensitive.
+            this.title = title;
+            this.normalTextureName = normalTextureName;
+            this.selectedTextureName = selectedTextureName;
+            this.isCommon = isCommon;
         }
 
         /// <summary>
-        /// Verifies if part macthes the filetr, and adds it into the part's list.
+        /// Verifies if part matches the filter, and adds it into the part's list.
         /// </summary>
         /// <param name="avPart">Part to check.</param>
         public void CheckPart(AvailablePart avPart)
         {
-            if (avPart.tags.Contains(categoryTag))
+            if (avPart.tags.Contains(tag))
             {
                 avParts.Add(avPart);
             }
         }
 
         /// <summary>
-        /// Creates new category in the game. DOes nothing if no parts were found for the filter.
+        /// Creates new filter in the game. Does nothing if no parts were found for the filter.
         /// </summary>
-        public void AddCategory()
+        public void AddFilter()
         {
             if (avParts.Count > 0)
             {
-                Debug.LogFormat("CCK category \"{0}\" part(s) count: {1}",
-                                categoryTitle, avParts.Count);
+                Debug.LogFormat("Add CCK filter \"{0}\" with {1} part(s)", title, avParts.Count);
                 GameEvents.onGUIEditorToolbarReady.Add(SubCategories);
             }
             else
             {
-                Debug.LogFormat("Skip CCK category \"{0}\" since there is no parts in it",
-                                categoryTitle);
+                Debug.LogFormat("Skip CCK filter \"{0}\" since there is no parts in it", title);
             }
+        }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+          return string.Format(
+              "title={0}, tag={1}, normIcon={2}, selIcon={3}, isCommon={4}",
+              title, tag, normalTextureName, selectedTextureName, isCommon);
         }
 
         /// <summary>
@@ -72,113 +101,49 @@ namespace CCK
             var filter = PartCategorizer.Instance.filters.Find(
                 f => f.button.categoryName == Category);
             PartCategorizer.AddCustomSubcategoryFilter(
-                filter, categoryTitle, GenIcon(), avParts.Contains);
+                filter, title, GenIcon(), avParts.Contains);
         }
 
-        /// <summary>Creates an icon from the category textures.</summary>
+        /// <summary>Creates an icon from the textures.</summary>
         /// <returns>Icon with normal and selected state.</returns>
         Icon GenIcon()
         {
             // Get normal and selected textures, and create the icon.
-            var selectedIcon = GameDatabase.Instance.GetTexture(
-                categoryIconTextureUrlPrefix + "_S", false /* asNormalMap */);
-            var normalIcon = GameDatabase.Instance.GetTexture(
-                categoryIconTextureUrlPrefix + "_N", false /* asNormalMap */);
-            var icon = new Icon(categoryIconTextureUrlPrefix + "Icon", normalIcon, selectedIcon);
-            return icon;
+            var normalTexture = GameDatabase.Instance.GetTexture(
+                normalTextureName, false /* asNormalMap */);
+            var selectedTexture = GameDatabase.Instance.GetTexture(
+                selectedTextureName, false /* asNormalMap */);
+            return new Icon(tag + "-icon", normalTexture, selectedTexture ?? normalTexture,
+                            simple: selectedTexture == null);
         }
     }
 
     /// <summary>
-    /// Main entry for the CCK functionality. Use this class to create custom filters.
+    /// Main entry for the CCK functionality. It loads configuration settings and creates the
+    /// appropriate filters in the edtior. Custom mods can upgrade configuration via ModuleManager
+    /// to construct own filters.
     /// </summary>
-    /// <example>
-    /// <para>
-    /// Create an object that runs once on the game start to create new category. CCK will handle
-    /// this information to have actual stuff done in the KSP editor.
-    /// </para>
-    /// <code><![CDATA[
-    /// [KSPAddon(KSPAddon.Startup.MainMenu, true /* once */)]
-    /// public class MyNewFilter : MonoBehaviour
-    /// {
-    ///    void Awake() {
-    ///        FilterManager.AddFilter("cck-cool-stuff-tag", "Cool Stuff",
-    ///                                "CoolStuff/Images/FilterIcon");
-    ///    }
-    /// }
-    /// ]]></code>
-    /// <para>
-    /// When game loads all the parts that have <c>"cck-cool-stuff-tag"</c> tag will be grouped in
-    /// the editor under filter named "Cool Stuff". The icon for the filter will be created from
-    /// two textures:
-    /// </para>
-    /// <list type="bullet">
-    /// <item><c>"CoolStuff/Images/FilterIcon_N"</c> for the normal mode.</item>
-    /// <item><c>"CoolStuff/Images/FilterIcon_S"</c> for the selected mode.</item>
-    /// </list>
-    /// <para>
-    /// Textures can be of any type which is recognized by Unity (e.g. <c>PNG</c>, <c>DDS</c>,
-    /// etc.).
-    /// </para>
-    /// </example>
     [KSPAddon(KSPAddon.Startup.MainMenu, true /* once */)]
-    public class FilterManager : MonoBehaviour
+    class FilterManager : MonoBehaviour
     {
         /// <summary>All filters managed by CCK.</summary>
-        readonly static List<PartsFilter> filters = new List<PartsFilter>();
+        static readonly List<PartsFilter> filters = new List<PartsFilter>();
 
         /// <summary>Called by Unity once the scene starts.</summary>
-        void Awake()
-        {
-            // Delay execution to let othe mods adding their categories. 
-            StartCoroutine(WaitAndCreateFilters());
-        }
-
-        /// <summary>
-        /// Adds filter for a tag if one doesn't exist. In case of there is a filter with the same
-        /// tag no duplicate will be created.
-        /// </summary>
-        /// <param name="tag">
-        /// Tag to check in the parts. Good style is to have it prefixed with <c>"cck-"</c> string
-        /// to indicate it's a CCK tag.
-        /// <para>
-        /// The tag can be absolutely any string as long as your mod is the only one that uses it.
-        /// If you're going to re-use a tag from some other mod do communicate to the author about
-        /// your intention, and let CCK developers know there is another common category candidate.
-        /// In general, it's enough to have at least two mods using the same tag to have new common
-        /// category added into CCK.
-        /// </para>
-        /// </param>
-        /// <param name="title">
-        /// User friendly string for the name of the filter. Note that if there are several filters
-        /// with the same tag then title from the first call will be used. It's undetermined which
-        /// mod will be the first in the chain, so keep names consistent.
-        /// </param>
-        /// <param name="iconUrlPrefix">
-        /// URL prefix to the icon's texture files. Two specific textures are expected for the
-        /// prefix:
-        /// <list type="bullet">
-        /// <item><c>"&lt;prefix&gt;_N"</c> for a normal texture.</item>
-        /// <item><c>"&lt;prefix&gt;_S"</c> for a selected texture.</item>
-        /// </list>
-        /// </param>
-        public static void AddFilter(string tag, string title, string iconUrlPrefix)
-        {
-            if (filters.All(x => x.categoryTag != tag))
+        void Awake() {
+            // Collect filter definitions.
+            var commonItemsNode = GameDatabase.Instance.GetConfigNode(
+                "CommunityCategoryKit/common-categories/CCKCommonFilterConfig");
+            if (commonItemsNode != null)
             {
-                filters.Add(new PartsFilter(tag, title, iconUrlPrefix));
+                AddFiltersFromConfig(commonItemsNode, isCommonTag: true);
             }
-        }
-
-        /// <summary>Waits for the end of frame and populates categories to the editor.</summary>
-        /// <remarks>
-        /// Waiting is needed to resolve race condition with the mods that initialize at the
-        /// <see cref="KSPAddon.Startup.MainMenu"/> scene.
-        /// </remarks>
-        IEnumerator WaitAndCreateFilters()
-        {
-            // Wait for the mods to load and request filters.
-            yield return new WaitForEndOfFrame();
+            var extraItemsNode = GameDatabase.Instance.GetConfigNode(
+                "CommunityCategoryKit/extra-categories/CCKExtraFilterConfig");
+            if (extraItemsNode != null)
+            {
+                AddFiltersFromConfig(extraItemsNode, isCommonTag: false);
+            }
 
             // Pass parts thru the filters.
             PartLoader.LoadedPartsList
@@ -187,7 +152,76 @@ namespace CCK
                 .ForEach(avPart => filters.ForEach(x => x.CheckPart(avPart)));
 
             // Add the filters into the game.
-            filters.ForEach(x => x.AddCategory());
+            filters.ForEach(x => x.AddFilter());
+        }
+
+        /// <summary>
+        /// Adds filter for a tag if one doesn't exist. In case of there is a filter with the same
+        /// tag a better candidate will be chosen.
+        /// </summary>
+        /// <remarks>
+        /// When a filter for an existing tag is being added a decision is made on which filter to
+        /// keep:
+        /// <list type="bullet">
+        /// <item>Native (a.k.a. "common") CCK filter is always favored over a custom filter.</item>
+        /// <item>
+        /// Custom filters are compared by their title and the one which is lexicographically "less"
+        /// (case-sensitive) will be kept, and the other one dropped.
+        /// </item>
+        /// </list>
+        /// </remarks>
+        /// <param name="newFilter">Filter description to add.</param>
+        void AddFilter(PartsFilter newFilter)
+        {
+            var existingFilter = filters.FirstOrDefault(x => x.tag == newFilter.tag);
+            if (existingFilter != null && newFilter.isCommon)
+            {
+                // Normally never happens. 
+                Debug.LogErrorFormat("Duplicated common filter: {0}. Ignoring.", tag);
+            }
+            else if (existingFilter == null)
+            {
+                Debug.LogFormat("Create new CCK filter: {0}", newFilter);
+                filters.Add(newFilter);
+            }
+            else if (existingFilter != null)
+            {
+                // A very simple tie-break approach. Main idea here is being consistent, i.e. always
+                // showing the same category on game load.
+                var tieBreakValue = string.Compare(
+                    newFilter.title, existingFilter.title, StringComparison.Ordinal);
+                if (!existingFilter.isCommon && tieBreakValue < 0)
+                {
+                    Debug.LogWarningFormat(
+                        "Replacing existing CCK filter with a new one: existing=[{0}], new=[{1}]",
+                        existingFilter, newFilter);
+                    filters.Remove(existingFilter);
+                    filters.Add(newFilter);
+                }
+                else
+                {
+                    Debug.LogWarningFormat("Ignoring new CCK filter in favor of the existing one:"
+                                           + " existing=[{0}], new=[{1}]",
+                                           existingFilter, newFilter);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reads filter definitions from a node and adds them into the manager.
+        /// </summary>
+        /// <param name="node">Node to get data from.</param>
+        /// <param name="isCommonTag">Specifies if node describes CCK native categories.</param>
+        void AddFiltersFromConfig(ConfigNode node, bool isCommonTag)
+        {
+            foreach (var item in node.GetNodes("Item"))
+            {
+                var filterItem = new PartsFilter(
+                    item.GetValue("tag"), item.GetValue("name"),
+                    item.GetValue("normalIcon"), item.GetValue("selectedIcon"),
+                    isCommonTag);
+                AddFilter(filterItem);
+            }
         }
     }
 }
