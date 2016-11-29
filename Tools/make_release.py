@@ -34,6 +34,9 @@ SRC = '..'
 SRC_VERSIONS_FILE = SRC + '/SOURCE/CCK/CCK/Properties/AssemblyInfo.cs'
 # Path to the release's binary. If it doesn't exist then no release.
 SRC_COMPILED_BINARY = '/SOURCE/CCK/CCK/bin/Release/CCK.dll'
+# Source version file to be updated during the build (see UpdateVersionInSources).
+# This update will go into the repository.
+SRC_REPOSITORY_VERSION_FILE = SRC + '/FOR_RELEASE/GameData/CommunityCategoryKit/CCK.version'
 
 
 # DEST configs.
@@ -46,11 +49,6 @@ DEST_RELEASES = '..'
 DEST_RELEASE_NAME_FMT = 'CCK_%d.%d.%d'
 # A file name format for releases with build field other than zero.
 DEST_RELEASE_NAME_WITH_BUILD_FMT = 'CCK_%d.%d.%d_build%d'
-
-
-# Source version file to be updated during the build (see UpdateVersionInSources).
-# This update will go into the repository.
-SRC_REPOSITORY_VERSION_FILE = SRC + '/FOR_RELEASE/GameData/CommunityCategoryKit/CCK.version'
 
 
 # Destination version to be updated post release (see UpdateVersionInDestinations).
