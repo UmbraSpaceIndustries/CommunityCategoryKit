@@ -19,7 +19,10 @@ import collections
 
 # ADJUST BEFORE RUN!
 # Set it to the local system path.
-ZIP_BINARY = 'L:/Program Files/7-Zip/7z.exe'
+SHELL_ZIP_BINARY = 'L:/Program Files/7-Zip/7z.exe'
+
+# An executable which will be called to build the project's binaraies in release mode.
+SHELL_COMPILE_BINARY_SCRIPT = 'make_binary.cmd'
 
 PACKAGE_TITLE = 'Community Category Kit'
 
@@ -27,8 +30,6 @@ PACKAGE_TITLE = 'Community Category Kit'
 SRC = '..'
 # Extract version number from here. See ExtractVersion() method.
 SRC_VERSIONS_FILE = SRC + '/SOURCE/CCK/CCK/Properties/AssemblyInfo.cs'
-# An executable which will be called to build the project's binaraies in release mode.
-SRC_COMPILE_BINARY_SCRIPT = 'make_binary.cmd'
 # Path to the release's binary. If it doesn't exist then no release.
 SRC_COMPILED_BINARY = '/SOURCE/CCK/CCK/bin/Release/CCK.dll'
 
@@ -98,7 +99,7 @@ def CompileBinary():
     if os.path.exists(binary_path):
       os.unlink(binary_path)
   print 'Compiling the sources in PROD mode...'
-  code = subprocess.call([SRC_COMPILE_BINARY_SCRIPT])
+  code = subprocess.call([SHELL_COMPILE_BINARY_SCRIPT])
 
   if (code != 0
       or not SRC_COMPILED_BINARY is None
@@ -227,7 +228,7 @@ def MakePackage():
 
   print 'Making %s package...' % PACKAGE_TITLE
   code = subprocess.call([
-      ZIP_BINARY,
+      SHELL_ZIP_BINARY,
       'a',
       package_file_name,
       DEST + '/*'])
