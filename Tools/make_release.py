@@ -24,9 +24,11 @@ SHELL_ZIP_BINARY = 'L:/Program Files/7-Zip/7z.exe'
 # An executable which will be called to build the project's binaraies in release mode.
 SHELL_COMPILE_BINARY_SCRIPT = 'make_binary.cmd'
 
+# For information only.
 PACKAGE_TITLE = 'Community Category Kit'
 
 # SRC configs.
+# Base path for all the repository files.
 SRC = '..'
 # Extract version number from here. See ExtractVersion() method.
 SRC_VERSIONS_FILE = SRC + '/SOURCE/CCK/CCK/Properties/AssemblyInfo.cs'
