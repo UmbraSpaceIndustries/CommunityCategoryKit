@@ -1,6 +1,6 @@
 # Public domain license.
 # Author: igor.zavoychinskiy@gmail.com
-# Version: 1.2 (Nov 11th, 2016)
+# Version: 1.3 (Nov 29th, 2016)
 
 # A very simple script to produce a .ZIP archive with the product distribution.
 
