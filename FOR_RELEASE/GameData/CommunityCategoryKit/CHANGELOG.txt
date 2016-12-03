@@ -1,3 +1,7 @@
+1.2.0 - 2016.12.2
+- [Enhancement] Define common filters via a config file.
+- [Enhancement] Allow defining custom filters by updating via ModuleManager (read Wiki!).
+
 1.1.0 - 2016.11.29
 - [Fix #7] Add images for Containers category.
 - [Fix #9] Sync up DLL's and mod's versions.
