@@ -56,7 +56,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FilterManager.cs" />
-    <Compile Include="Filters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
