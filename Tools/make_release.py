@@ -1,6 +1,6 @@
 # Public domain license.
 # Author: igor.zavoychinskiy@gmail.com
-# Version: 1.3 (Nov 29th, 2016)
+# Version: 1.3.1 (Dec 2nd, 2016)
 
 # A very simple script to produce a .ZIP archive with the product distribution.
 
@@ -38,7 +38,6 @@ SRC_COMPILED_BINARY = SRC + '/SOURCE/CCK/CCK/bin/Release/CCK.dll'
 # This update will go into the repository.
 SRC_REPOSITORY_VERSION_FILE = SRC + '/FOR_RELEASE/GameData/CommunityCategoryKit/CCK.version'
 
-
 # DEST configs.
 # A path where releaae structure will be constructed.
 DEST = '../Release'
@@ -58,12 +57,18 @@ POST_BUILD_COPY = [
     (SRC_COMPILED_BINARY, SRC + '/FOR_RELEASE/GameData/CommunityCategoryKit/CCK.dll'),
 ]
 
-
-# Keys are paths in DEST, values are paths/patterns in SRC.
-# When value is a string then the entire source follder is copied.
-# Destination folder is not created recursively so, if you need to copy a file
-# into "a/b/c" folder then you need three keys: "a", "a/b", and 'a/b/c".
-# Subfolders are not copied too, so add them all explicitly.
+# Key is a path in DEST. The path *must* start from "/". The root in this case
+# is DEST. There is no way to setup real root.
+# Value is a path in SRC. It's either a string or a list of patterns:
+# - If value is a plain string then then it's path to a single file or
+#   directory.
+#   If path designates a folder then the entire tree will be copied.
+# - If value is a list then each item:
+#   - If does *not* end with "/*" then it's a path to a file.
+#   - If *does* end with "/*" then it's a folder name. Only files in the
+#     folder are copied, not the whole tree.
+#   - If starts from "-" then it's a request to *drop* files in DEST folder
+#     (the key). Value after "-" is a regular OS path pattern.
 STRUCTURE = collections.OrderedDict({
   '/': [
     '/FOR_RELEASE/License_CC.txt',
