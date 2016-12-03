@@ -73,6 +73,9 @@ STRUCTURE = collections.OrderedDict({
     '/FOR_RELEASE/GameData/CommunityCategoryKit/*',
     '/SOURCE/CCK/CCK/bin/Release/CCK.dll',
   ],
+  '/GameData/CommunityCategoryKit/icons' : [
+    '/FOR_RELEASE/GameData/CommunityCategoryKit/icons/*',
+  ],
 })
 
 VERSION = None
