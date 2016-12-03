@@ -1,6 +1,6 @@
 # Public domain license.
 # Author: igor.zavoychinskiy@gmail.com
-# Version: 1.3.1 (Dec 2nd, 2016)
+# Version: 1.4 (Dec 2nd, 2016)
 
 # A very simple script to produce a .ZIP archive with the product distribution.
 
@@ -73,7 +73,6 @@ STRUCTURE = collections.OrderedDict({
   '/': [
     '/FOR_RELEASE/License_CC.txt',
   ],
-  '/GameData' : [],  # Create plugins main folder.
   '/GameData/CommunityCategoryKit': [
     '/FOR_RELEASE/GameData/CommunityCategoryKit/*',
     '/SOURCE/CCK/CCK/bin/Release/CCK.dll',
@@ -143,6 +142,7 @@ def MakeFoldersStructure():
 
     # Copy files.
     dest_path = DEST + folder 
+    os.makedirs(dest_path)
     sources = STRUCTURE[folder]
     if not isinstance(sources, list):
       src_path = SRC + sources
@@ -150,7 +150,6 @@ def MakeFoldersStructure():
       shutil.copytree(src_path, dest_path)
     else:
       print 'Making folder "%s"' % dest_path
-      os.mkdir(dest_path)
       for file_path in STRUCTURE[folder]:
         source_path = SRC + file_path
         if file_path.endswith('/*'):
