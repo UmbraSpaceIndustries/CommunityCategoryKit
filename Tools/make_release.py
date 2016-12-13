@@ -49,9 +49,9 @@ DEST_RELEASE_NAME_FMT = 'CCK_%d.%d.%d'
 # A file name format for releases with build field other than zero.
 DEST_RELEASE_NAME_WITH_BUILD_FMT = 'CCK_%d.%d.%d_build%d'
 
-# Destination targets to be updated post release (see UpdateVersionInDestinations).
-# This is a copy of the source version(s) placed into the appropriate destination
-# folder(s).
+# Targets to be updated post release (see UpdateVersionInDestinations).
+# First item of the tuple sets souirce, and  teh second item sets the target.
+# Both paths are counted as full OS paths (i.e. either absolute or relative).
 POST_BUILD_COPY = [
     (SRC_REPOSITORY_VERSION_FILE, DEST + '/GameData/CommunityCategoryKit/CCK.version'),
     (SRC_COMPILED_BINARY, SRC + '/FOR_RELEASE/GameData/CommunityCategoryKit/CCK.dll'),
