@@ -101,7 +101,7 @@ namespace CCK
             var filter = PartCategorizer.Instance.filters.Find(
                 f => f.button.categoryName == Category);
             PartCategorizer.AddCustomSubcategoryFilter(
-                filter, title, GenIcon(), avParts.Contains);
+                filter, title, title, GenIcon(), avParts.Contains);
         }
 
         /// <summary>Creates an icon from the textures.</summary>
