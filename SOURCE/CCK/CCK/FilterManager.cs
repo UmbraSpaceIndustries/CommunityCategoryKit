@@ -28,7 +28,12 @@ namespace CCK
         /// <summary>All parts that matched the filter.</summary>
         readonly List<AvailablePart> avParts = new List<AvailablePart>();
         /// <summary>Editor button to attach filter to.</summary>
-        const string Category = "Filter by Function";
+        /// <remarks>
+        /// The value is a localization identificator for the "Filter by function" button. We use
+        /// the ID since it will unlikely change in the future, in spite of the English or localized
+        /// display names.
+        /// </remarks>
+        const string CategoryButtonLocalizationId = "#autoLOC_453547";
 
         /// <summary>Creates a filter.</summary>
         /// <param name="tag">
@@ -99,7 +104,13 @@ namespace CCK
         void SubCategories()
         {
             var filter = PartCategorizer.Instance.filters.Find(
-                f => f.button.categoryName == Category);
+                f => f.button.categorydisplayName == CategoryButtonLocalizationId);
+            if (filter == null) {
+                // It can only happen due to a major changes in the KSP core.
+                Debug.LogErrorFormat(
+                    "Cannot find 'Filter by function' button for category: {0}", title);
+                return;
+            }
             PartCategorizer.AddCustomSubcategoryFilter(
                 filter, title, title, GenIcon(), avParts.Contains);
         }
