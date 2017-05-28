@@ -28,7 +28,7 @@ namespace CCK
         /// <summary>All parts that matched the filter.</summary>
         readonly List<AvailablePart> avParts = new List<AvailablePart>();
         /// <summary>Editor button to attach filter to.</summary>
-        const string Category = "Filter by Function";
+        const string Category = "Filter by function";
 
         /// <summary>Creates a filter.</summary>
         /// <param name="tag">
