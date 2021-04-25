@@ -150,7 +150,7 @@ pipeline {
             throw $Response.StatusCode
           } else {
             Write-Output "GitHub API replied with status code: $Response.StatusCode"
-            Write-Ouptut $Response.Content
+            Write-Output ($Response.Content | ConvertFrom-Json | ConvertTo-Json -Depth 100)
           }
 
           echo "Uploading artifacts to GitHub..."
@@ -165,7 +165,7 @@ pipeline {
             throw $Response.StatusCode
           } else {
             Write-Output "GitHub API replied with status code: $Response.StatusCode"
-            Write-Ouptut $Response.Content
+            Write-Output ($Response.Content | ConvertFrom-Json | ConvertTo-Json -Depth 100)
           }
         '''
       }
