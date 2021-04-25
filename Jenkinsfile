@@ -72,13 +72,8 @@ pipeline {
               Write-Output "Branch folder location is: $CachePath"
               New-Item -Path $ReleasePath -Name $_ -ItemType Directory -Force
               Write-Output "Removing old artifacts..."
-              $NewArtifacts = Get-ChildItem -Path ./FOR_RELEASE/GameData/CommunityCategoryKit -Attributes Directory -Name
-              $NewArtifacts.ForEach({
-                $ArtifactPath = Join-Path -Path $CachePath -ChildPath $_
-                if (Test-Path -Path $ArtifactPath) {
-                  Remove-Item -Path $ArtifactPath -Recurse -Force
-                }
-              })
+              $ArtifactPath = Join-Path -Path $CachePath -ChildPath "CommunityResourcePack"
+              Remove-Item -Path $ArtifactPath -Recurse -Force
               Write-Output "Caching new artifacts..."
               Copy-Item -Path ./FOR_RELEASE/GameData/* -Destination $CachePath -Recurse
             })
