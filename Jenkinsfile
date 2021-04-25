@@ -9,7 +9,6 @@ pipeline {
       steps {
         bat "git config user.email burt-macklin@jenkins"
         bat 'git config user.name "Agent Burt Macklin"'
-        powershell "dir env:"
       }
     }
     // Determine build & publish flags for branch
@@ -147,14 +146,13 @@ pipeline {
           $Json = ConvertTo-Json $Body
           $Response = Invoke-WebRequest -Method Post -Uri $Url -Headers $Headers `
               -ContentType "application/json" -Body $Json -UseBasicParsing
-          $Response
           if ( $Response.StatusCode -ge 300 ) {
             Write-Output "Could not create GitHub Release"
             Write-Output "Status Code: $Response.StatusCode"
             Write-Output $Response.Content
             throw $Response.StatusCode
           } else {
-            Write-Output "GitHub API replied with status code: $Response.StatusCode"
+            Write-Output "GitHub API replied with status code: $($Response.StatusCode)"
             Write-Output ($Response.Content | ConvertFrom-Json | ConvertTo-Json -Depth 100)
           }
 
@@ -170,7 +168,7 @@ pipeline {
             Write-Output $Response.Content
             throw $Response.StatusCode
           } else {
-            Write-Output "GitHub API replied with status code: $Response.StatusCode"
+            Write-Output "GitHub API replied with status code: $($Response.StatusCode)"
             Write-Output ($Response.Content | ConvertFrom-Json | ConvertTo-Json -Depth 100)
           }
         '''
