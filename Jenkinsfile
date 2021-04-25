@@ -24,35 +24,11 @@ pipeline {
         }
       }
     }
-    stage("Setup experimental environment") {
-      when { branch "experimental" }
-      steps {
-        script {
-          env.ARTIFACT_CACHES = "experimental"
-          env.AUTO_PUBLISH = "false"
-          env.BUILD_CONFIG = "debug"
-          env.IS_PRERELEASE = "true"
-          env.TAG_PREFIX = "Experimental Release"
-        }
-      }
-    }
-    stage("Setup pre-release environment") {
-      when { branch "prerelease" }
-      steps {
-        script {
-          env.ARTIFACT_CACHES = "bleeding-edge,prerelease"
-          env.AUTO_PUBLISH = "true"
-          env.BUILD_CONFIG = "release"
-          env.IS_PRERELEASE = "true"
-          env.TAG_PREFIX = "Pre-Release"
-        }
-      }
-    }
     stage("Setup release environment") {
       when { branch "release" }
       steps {
         script {
-          env.ARTIFACT_CACHES = "bleeding-edge,prerelease,release"
+          env.ARTIFACT_CACHES = "bleeding-edge,release"
           env.AUTO_PUBLISH = "true"
           env.BUILD_CONFIG = "release"
           env.IS_PRERELEASE = "false"
