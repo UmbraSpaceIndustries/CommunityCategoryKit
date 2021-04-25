@@ -74,7 +74,7 @@ pipeline {
     // Build
     stage("Build") {
       steps {
-        bat "dotnet build --output FOR_RELEASE/GameData/CommunityCategoryKit --configuration ${env.BUILD_CONFIG} --verbosity detailed ./SOURCE/CCK/CCK.csproj"
+        bat "dotnet build --output FOR_RELEASE/GameData/CommunityCategoryKit --configuration ${env.BUILD_CONFIG} --verbosity detailed ./SOURCE/CCK/CCK/CCK.csproj"
       }
     }
     // Update artifact cache
