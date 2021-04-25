@@ -9,6 +9,7 @@ pipeline {
       steps {
         bat "git config user.email burt-macklin@jenkins"
         bat 'git config user.name "Agent Burt Macklin"'
+        powershell "dir env:"
       }
     }
     // Determine build & publish flags for branch
@@ -131,7 +132,7 @@ pipeline {
       steps {
         powershell '''
           echo "Creating release on GitHub..."
-          $Url = "https://api.github.com/repos/tjdeckard/USITools/releases"
+          $Url = "https://api.github.com/repos/tjdeckard/CommunityCategoryKit/releases"
           $Headers = @{
             "Accept" = "application/vnd.github.v3+json"
             "Authorization" = "token $env:GITHUB_TOKEN"
