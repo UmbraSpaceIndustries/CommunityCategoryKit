@@ -1,9 +1,9 @@
 {
-    "DOWNLOAD": "https://github.com/BobPalmer/CommunityCategoryKit/releases", 
+    "DOWNLOAD": "https://github.com/UmbraSpaceIndustries/CommunityCategoryKit/releases", 
     "GITHUB": {
         "ALLOW_PRE_RELEASE": false, 
         "REPOSITORY": "CommunityCategoryKit", 
-        "USERNAME": "BobPalmer"
+        "USERNAME": "UmbraSpaceIndustries"
     }, 
     "KSP_VERSION": {
         "MAJOR": 1, 
@@ -21,7 +21,7 @@
         "PATCH": 0
     }, 
     "NAME": "Community Category Kit", 
-    "URL": "https://raw.githubusercontent.com/BobPalmer/CommunityCategoryKit/master/FOR_RELEASE/GameData/CommunityCategoryKit/CCK.version", 
+    "URL": "https://raw.githubusercontent.com/UmbraSpaceIndustries/CommunityCategoryKit/master/FOR_RELEASE/GameData/CommunityCategoryKit/CCK.version", 
     "VERSION": {
         "BUILD": 0, 
         "MAJOR": 5, 
